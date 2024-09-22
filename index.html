@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шифр Цезаря</title>
+    <style>
+        /* Устанавливаем фон для всей страницы */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-image: url('https://i.ibb.co/GnTKD8w/1626199918-29-kartinkin-com-p-grecheskii-fon-krasivo-30.jpg'); /* Ссылка на фоновое изображение */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 203, 105, 0.5); /* Полупрозрачный белый слой */
+            z-index: -1; /* Позволяет фону быть за текстом */
+        }
+
+        @font-face {
+        font-family: 'DS Greece';
+        src: url('/Style/DS_Greece.ttf');
+        }
+        .text_effect {
+        font-family: 'DS Greece';
+        color: rgb(255, 0, 0);
+        font-size: 36px;
+        text-shadow: rgb(3, 3, 3) 2px 2px 4px;
+        }
+        
+        /* Правый блок для диска */
+        #rightSide {
+            width: 48%;
+            text-align: center;
+        }
+
+        #diskContainer {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        /* Внешнее кольцо */
+        #outerRing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.ibb.co/Dkfs76v/01.png'); /* Внешнее кольцо */
+            background-size: cover;
+        }
+        /* Внутреннее кольцо */
+        #innerRing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.ibb.co/bXTr1GR/02.png'); /* Внутреннее кольцо */
+            background-size: cover;
+            cursor: pointer;
+        }
+
+        /* Стиль для элементов ввода и кнопок */
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button {
+            cursor: pointer;
+        }
+        /* Стиль для результатов */
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: green;
+        }
+        /* Стиль для блока заданий */
+        .container {
+            display: flex; /* Используем Flexbox для размещения элементов в ряд */
+            justify-content: space-between; /* Распределяем пространство между элементами */
+            align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+            margin-top: 50px; /* Отступ сверху */
+        }
+        .task-block {
+            flex: 1; /* Позволяет блоку занимать оставшееся пространство */
+            margin-top: 50px;
+            border-radius: 10px;
+            height: auto; /* Автоматическая высота */
+            
+        }
+        .task-block h2 {
+            margin-top: 0;
+        }
+        .task-block img {
+            max-width: 60%; /* Ограничивает ширину изображения до 100% от родительского элемента */
+            height: auto; /* Сохраняет пропорции изображения */
+            display: block; /* Убирает отступы снизу, создаваемые строчными элементами */
+            margin: 10px auto; /* Центрирует изображение и добавляет отступы сверху и снизу */
+        }
+        .task-input {
+            display: inline-block; /* Расположение в линию */
+            width: 300px; /* Установите желаемую ширину */
+            height: 10px; /* Установите желаемую высоту */
+            margin-top: 5px; /* Увеличьте отступ сверху для большего расстояния */
+            margin-bottom: 5px; /* Увеличьте отступ снизу для большего расстояния */
+            border: 1px solid #888888; /* Добавьте границу для лучшего визуального восприятия */
+            border-radius: 5px; /* Закруглите углы поля */
+        }
+        .feedback {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        /* Стиль для заголовка и изображения Цезаря */
+        #header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: rgba(244, 244, 244, 0.8); /* Слегка прозрачный фон */
+            border-radius: 10px;
+            padding: 20px; /* Добавьте отступ для лучшего вида */
+        }
+        #header img {
+            width: 150px; /* Размер изображения Цезаря */
+            border-radius: 50%; /* Закругленные углы */
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Блок с заголовком и изображением Цезаря -->
+    <div id="header">
+        <img src="https://i.ibb.co/vXPq0P6/image.png" alt="Цезарь"> <!-- Ссылка на изображение Цезаря -->
+        <div>
+            <h1 class="text_effect">ШИФР ЦЕЗАРЯ</h1>
+            <p><b>Гай Юлий Цезарь</b> — древнеримский полководец и государственный деятель, известен не только своими военными победами и реформами, но и тем, что использовал простой метод шифрования переписки.</p>
+            <p><b>Шифр Цезаря</b> — один из самых ранних известных методов шифрования. Он заключается в сдвиге каждой буквы сообщения на фиксированное число позиций в алфавите. Например, при сдвиге на <b>3 символа</b> 
+                буква "<b>A</b>" становится "<b>Г</b>", "<b>Б</b>" — "<b>Д</b>", и так далее, что он писал вместо <b>Я</b>? Очевидно, <b>В</b>. Этот метод использовался для передачи секретных сообщений.</p>
+            </p>
+        </div>
+    </div>
+
+    <!-- Форма для ввода текста -->
+    <div class="container" style="background-color: rgba(244, 244, 244, 0.8); padding: 20px; border-radius: 10px;">
+        <div id="cipherBlock">
+            <h1>Шифрование шифром Цезаря</h1>
+            <label for="text">Введите текст:</label><br>
+            <input type="text" id="text" placeholder="Введите слово"><br>
+    
+            <label for="shift">Укажите сдвиг (по умолчанию 3):</label><br>
+            <input type="number" id="shift" value="3"><br>
+    
+            <button onclick="encryptText()">Зашифровать</button>
+            <button onclick="decryptText()">Дешифровать</button>
+
+            <div class="result" id="result"></div>
+    </div>      
+    <!-- Правый блок с алфавитным диском -->
+    <div id="rightSide">
+        <h2>Алфавитный диск</h2>
+        <div id="diskContainer">
+            <div id="outerRing"></div> <!-- Внешнее статичное кольцо -->
+            <div id="innerRing"></div> <!-- Внутреннее вращающееся кольцо -->
+        </div>
+    </div>
+    </div>
+
+    <!-- Блок с заданиями, разделенный на две части -->
+    <div class="container" style="background-color: rgba(244, 244, 244, 0.8); padding: 20px; border-radius: 10px; margin-top: 50px;">
+    <div class="task-block" id="leftSide">
+        <h2>Задание:</h2>
+        <h3>Зашифруйте слова, представленные ниже. Каждое слово со своим сдвигом:</h3>
+
+            <label for="word1">1. <b>Шифрование</b> (сдвиг вправо на 3 буквы):</label>
+            <input type="text" id="word1" class="task-input" placeholder="Введите результат">
+            <span id="feedback1" class="feedback"></span><br>
+
+            <label for="word2">2. <b>Криптография</b> (сдвиг влево на 2 буквы):</label>
+            <input type="text" id="word2" class="task-input" placeholder="Введите результат">
+            <span id="feedback2" class="feedback"></span><br>
+
+            <label for="word3">3. <b>Ключ</b> (сдвиг вправо на 4 буквы):</label>
+            <input type="text" id="word3" class="task-input" placeholder="Введите результат">
+            <span id="feedback3" class="feedback"></span><br>
+
+            <br>
+            <h3>Дешифруйте слова, учитывая сдвиг, с которым они были зашифрованы:</h3>
+            <label for="word4">1. <b>Криптоанализ</b> (сдвиг вправо на 5 букв):</label>
+            <input type="text" id="word4" class="task-input" placeholder="Введите результат">
+            <span id="feedback4" class="feedback"></span><br>
+
+            <label for="word5">2. <b>Симметричное шифрование</b> (сдвиг влево на 3 буквы):</label>
+            <input type="text" id="word5" class="task-input" placeholder="Введите результат">
+            <span id="feedback5" class="feedback"></span><br>
+
+            <label for="word6">3. <b>Асимметричное шифрование</b> (сдвиг вправо на 6 букв):</label>
+            <input type="text" id="word6" class="task-input" placeholder="Введите результат">
+            <span id="feedback6" class="feedback"></span><br>
+
+            <button onclick="checkAnswers()">Проверить</button>
+        </div>
+        <!-- Инструкция -->
+        <div class="task-block" style="width: 25%; margin-left: 10%;">
+            <h3 style="color: red;">Сохраните результат работы в свою папку!!!</h3>
+            <p>После заполнения всех полей в задании обязательно нажмите кнопку проверить!</p>
+            <p>Чтобы сохранить результат работы, сделайте скриншот экрана и вставьте его в документ Word или графический редактор Paint потом сохраните его с именем Шифр Цезаря в свою папку.</p>
+            <img src="https://i.ibb.co/DCwJJv6/image.png" alt="Цезарь рекомендует">
+        </div>
+    </div>
+
+    <script>
+        // Правильные ответы
+        const correctAnswers = {
+            word1: "Ылчусегрлз", // Шифрование +3
+            word2: "Иожнрмбоютжэ", // Криптография -2
+            word3: "Опвы", // Ключ +4
+            word4: "Пхнфчуетернм", // Криптоанализ +5
+            word5: "Оёййвпнёфклв хёснляэкёв", // Симметричное шифрование -3
+            word6: "Ёчотткшцоэуфк юоъцфзёуок" // Асимметричное шифрование +6
+        };
+
+        // Функция проверки ответов
+        function checkAnswers() {
+            for (let i = 1; i <= 6; i++) {
+                let userInput = document.getElementById(`word${i}`).value;
+                let feedbackElement = document.getElementById(`feedback${i}`);
+                
+                if (userInput === correctAnswers[`word${i}`]) {
+                    feedbackElement.innerHTML = "&#10004;"; // Зеленая галочка
+                    feedbackElement.className = "feedback correct";
+                } else {
+                    feedbackElement.innerHTML = "&#10006;"; // Красный крестик
+                    feedbackElement.className = "feedback incorrect";
+                }
+            }
+        }
+
+        let isDragging = false;
+        let currentRotation = 0;
+        let lastMouseY = 0;
+
+        const innerRing = document.getElementById('innerRing');
+
+        // Функции для вращения внутреннего кольца
+        innerRing.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaY = e.clientY - lastMouseY;
+            currentRotation += deltaY * 0.5;
+            innerRing.style.transform = `rotate(${currentRotation}deg)`;
+
+            lastMouseY = e.clientY;
+        });
+
+        // Функция шифрования текста по шифру Цезаря
+        function encryptText() {
+            let text = document.getElementById("text").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let encryptedText = '';
+
+            // Правильный русский алфавит с буквой "Ё"
+            const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+            const lowerAlphabet = alphabet.toLowerCase();
+            const alphabetLength = alphabet.length;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+
+                // Проверка для прописных букв кириллицы
+                if (alphabet.includes(char)) {
+                    let index = (alphabet.indexOf(char) + shift) % alphabetLength;
+                    // Если индекс отрицательный, корректируем его
+                    if (index < 0) {
+                        index += alphabetLength;
+                    }
+                    encryptedText += alphabet[index];
+                }
+                // Проверка для строчных букв кириллицы
+                else if (lowerAlphabet.includes(char)) {
+                    let index = (lowerAlphabet.indexOf(char) + shift) % alphabetLength;
+                    // Если индекс отрицательный, корректируем его
+                    if (index < 0) {
+                        index += alphabetLength;
+                    }
+                    encryptedText += lowerAlphabet[index];
+                }
+                // Если символ не буква, просто добавляем его без изменений
+                else {
+                    encryptedText += char;
+                }
+            }
+
+            document.getElementById("result").innerText = "Зашифрованный текст: " + encryptedText;
+        }
+
+        // Функция дешифрования текста по шифру Цезаря
+        function decryptText() {
+            let text = document.getElementById("text").value;
+            let shift = parseInt(document.getElementById("shift").value);
+            let decryptedText = '';
+
+            // Правильный русский алфавит с буквой "Ё"
+            const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+            const lowerAlphabet = alphabet.toLowerCase();
+            const alphabetLength = alphabet.length;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+
+                // Проверка для прописных букв кириллицы
+                if (alphabet.includes(char)) {
+                    let index = (alphabet.indexOf(char) - shift) % alphabetLength;
+                    // Коррекция отрицательных индексов
+                    if (index < 0) {
+                        index += alphabetLength;
+                    }
+                    decryptedText += alphabet[index];
+                }
+                // Проверка для строчных букв кириллицы
+                else if (lowerAlphabet.includes(char)) {
+                    let index = (lowerAlphabet.indexOf(char) - shift) % alphabetLength;
+                    // Коррекция отрицательных индексов
+                    if (index < 0) {
+                        index += alphabetLength;
+                    }
+                    decryptedText += lowerAlphabet[index];
+                }
+                // Если символ не буква, просто добавляем его без изменений
+                else {
+                    decryptedText += char;
+                }
+            }
+
+            document.getElementById("result").innerText = "Дешифрованный текст: " + decryptedText;
+        }
+
+        window.onload = function() {
+    // Очищаем все текстовые поля и результаты при загрузке страницы
+    document.getElementById('text').value = '';
+    document.getElementById('shift').value = '3'; // сбросим сдвиг к значению по умолчанию
+    document.getElementById('result').innerText = '';
+    
+    // Очищаем все задания
+    for (let i = 1; i <= 6; i++) {
+        document.getElementById(`word${i}`).value = '';
+        document.getElementById(`feedback${i}`).innerHTML = '';
+    }
+};
+    </script>
+
+</body>
+</html>
